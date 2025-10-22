@@ -1,17 +1,18 @@
 import { useState, useRef, useMemo } from 'react';
 import { DropdownItem } from './DropdownItem';
 import { Person } from './types/Person';
+import React from 'react';
 
 type Props = {
   people: Person[];
   delay?: number;
-  onSelected: (person: Person | null) => void;
+  onSelect: (person: Person | null) => void;
 };
 
 export const Dropdown: React.FC<Props> = ({
   people,
   delay = 300,
-  onSelected,
+  onSelect: handleSelect,
 }: Props) => {
   const [query, setQuery] = useState('');
   const [normalizedQuery, setNormalizedQuery] = useState('');
@@ -27,14 +28,14 @@ export const Dropdown: React.FC<Props> = ({
 
   const saveQuery = (newQuery: string) => {
     setQuery(newQuery);
-    onSelected(null);
+    handleSelect(null);
 
     window.clearTimeout(timerId.current);
 
     timerId.current = window.setTimeout(() => {
       const latestQuery = newQuery.trim().toLowerCase();
 
-      if (latestQuery !== normalizedQuery) {
+      if (latestQuery !== '' && latestQuery !== normalizedQuery) {
         setNormalizedQuery(latestQuery);
       }
     }, delay);
@@ -62,9 +63,9 @@ export const Dropdown: React.FC<Props> = ({
                 <DropdownItem
                   key={person.slug}
                   person={person}
-                  click={(name: string) => {
-                    onSelected(person);
-                    setQuery(name);
+                  onSelect={(selectedPerson: Person) => {
+                    handleSelect(selectedPerson);
+                    setQuery(selectedPerson.name);
                     setIsDropdownOpen(false);
                   }}
                 />
@@ -74,7 +75,7 @@ export const Dropdown: React.FC<Props> = ({
         )}
       </div>
 
-      {filteredPeople.length === 0 && (
+      {isDropdownOpen && filteredPeople.length === 0 && (
         <div
           className="
             notification

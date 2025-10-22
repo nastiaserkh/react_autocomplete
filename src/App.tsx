@@ -18,7 +18,7 @@ export const App: React.FC = () => {
 
         <Dropdown
           people={peopleFromServer}
-          onSelected={(person: Person | null) => {
+          onSelect={(person: Person | null) => {
             setSelectedPerson(person);
           }}
         />
