@@ -12,7 +12,7 @@ type Props = {
 export const Dropdown: React.FC<Props> = ({
   people,
   delay = 300,
-  onSelect: handleSelect,
+  onSelect: handleChange,
 }: Props) => {
   const [query, setQuery] = useState('');
   const [normalizedQuery, setNormalizedQuery] = useState('');
@@ -28,17 +28,21 @@ export const Dropdown: React.FC<Props> = ({
 
   const saveQuery = (newQuery: string) => {
     setQuery(newQuery);
-    handleSelect(null);
+    handleChange(null);
 
     window.clearTimeout(timerId.current);
 
-    timerId.current = window.setTimeout(() => {
-      const latestQuery = newQuery.trim().toLowerCase();
+    if (newQuery.trim().length === 0) {
+      setNormalizedQuery('');
+    } else {
+      timerId.current = window.setTimeout(() => {
+        const latestQuery = newQuery.trim().toLowerCase();
 
-      if (latestQuery !== '' && latestQuery !== normalizedQuery) {
-        setNormalizedQuery(latestQuery);
-      }
-    }, delay);
+        if (latestQuery !== normalizedQuery) {
+          setNormalizedQuery(latestQuery);
+        }
+      }, delay);
+    }
   };
 
   return (
@@ -64,7 +68,7 @@ export const Dropdown: React.FC<Props> = ({
                   key={person.slug}
                   person={person}
                   onSelect={(selectedPerson: Person) => {
-                    handleSelect(selectedPerson);
+                    handleChange(selectedPerson);
                     setQuery(selectedPerson.name);
                     setIsDropdownOpen(false);
                   }}
